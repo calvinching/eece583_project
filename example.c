@@ -101,11 +101,9 @@ CHROMOSOME offspring2;
 int parent1_idx = -1;
 int parent2_idx = -1;
 
-void delay();
 void button_press(float x, float y);
 void proceed_state_button_func(void (*drawscreen_ptr) (void));
 void proceed_exit_button_func(void (*drawscreen_ptr) (void));
-void debug_button_func(void (*drawscreen_ptr) (void));
 void drawscreen();
 int parse_file(char *file);
 void print_net(NET *net);
@@ -215,7 +213,6 @@ int main(int argc, char **argv) {
 
     create_button("Window", "Go 1 State", proceed_state_button_func);
     create_button("Window", "Go To Exit", proceed_exit_button_func);
-    create_button("Window", "Debug", debug_button_func);
     drawscreen();
     event_loop(button_press, drawscreen);
     return 0;
@@ -1246,8 +1243,6 @@ void proceed_state_button_func(void (*drawscreen_ptr) (void)) {
     STATE cur_state = state;
     while (cur_state == state && !done) {
         run_partition();
-        //drawscreen();
-        //delay();
     }
 
     if (done)
@@ -1258,8 +1253,6 @@ void proceed_exit_button_func(void (*drawscreen_ptr) (void)) {
     clock_t start = clock();
     while (!done) {
         run_partition();
-        //drawscreen();
-        //delay();
     }
     clock_t end = clock();
     double duration = (double)(end - start) / CLOCKS_PER_SEC;
@@ -1285,21 +1278,6 @@ void print_net(NET *net) {
     }
 }
 
-
-void debug_button_func(void (*drawscreen_ptr) (void)) {
-    printf("Logic cells:\n");
-    LOGIC_CELL *tmp = logic_cells;
-    while (tmp != NULL) {
-        printf("  id: %d - partition (%s)\n", tmp->id, PARTITION_STR[tmp->partition]);
-    }
-
-    printf("\nNets: \n");
-    NET *cur = all_nets;
-    while (cur != NULL) {
-        print_net(cur);
-        cur = cur->next;
-    }
-}
 
 int parse_file(char *file) {
     FILE *fp;
@@ -1409,16 +1387,6 @@ void drawscreen() {
     clearscreen();
     draw_grid(true);
     draw_grid(false);
-}
-
-void delay() {
-    int i, j, k, sum;
-
-    sum = 0;
-    for (i = 0; i < 100; i++)
-        for (j = 0; j < i; j++)
-            for (k = 0; k < 30; k++)
-                sum = sum + i + j - k;
 }
 
 void add_to_list(NET **head, NET *n) {
